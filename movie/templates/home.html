@@ -1,3 +1,26 @@
 <!--<h1>Bienvenido a las peliculas</h1>-->
-<h1>Bienvenido a las peliculas, <span style='color:red'>{{name}}</span> </h1>
-<h2>No hay más página</h2>
+<h1>Bienvenido a las peliculas</h1>
+
+<div class="container">
+    <form action ="">
+        <div class="mb-3">
+            <label for="searchMovie" class="form-label">
+                Search for movie
+            </label>
+            <input type="text" class="form-control" name="searchMovie">
+        </div>
+        <button type="submit" class="btn btn-primary">
+            Search
+        </button>
+    </form>
+    <p>Searching for {{searchTerm}}</p>
+        {% for movie in movies %}
+            <h2>{{movie.title}}</h2>
+            <p>{{movie.description}}</p>
+            <img src="{{movie.image.url}}">
+            {% if movie.url %}
+                <a href="{{movie.url}}"> <br> <br> Learn more</a>
+            {% endif %}
+        {% endfor %}
+    <br/>
+</div>
