@@ -1,5 +1,6 @@
-
-
+    
+{% extends 'base.html' %} 
+{% block content %}
 
 <div class="container">
     {% for news in newss %}
@@ -16,3 +17,5 @@
     </div>
     {% endfor %}
 </div>
+
+{% endblock content %}
