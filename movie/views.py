@@ -115,3 +115,7 @@ def genrestatistics_view(request):
 
 
     return render(request, 'genrestatistics.html', {'genregraphic': genregraphic})
+
+def signup(request):
+    email = request.GET.get('email')
+    return render(request, 'signup.html', {'email': email})
