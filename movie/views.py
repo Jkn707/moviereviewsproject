@@ -26,42 +26,92 @@ def about(request):
     # return HttpResponse('<h1>hola about</h1>')
     return render(request, 'about.html')
 
-def statistics_view(request):
+def yearstatistics_view(request):
     matplotlib.use('Agg')
-    years = Movie.objects.values('year', flat = True).distinct().order_by('year')
 
-    movie_counts_by_year = {}
-    for year in years:
-        if year:
-            movies_in_year = Movie.objects.filter(year=year)
+    all_movies = Movie.objects.all()
+
+    movie_count_by_genre = {}
+
+    for movie in all_movies:
+        year = movie.year if movie.year else "None"
+
+        if year in movie_count_by_genre:
+            movie_count_by_genre[year] += 1
         else:
-            movies_in_year = Movie.objects.filter(year__isnull=True)
-            year = "None"
-        count = movies_in_year.count()
-        movie_counts_by_year[year] = count
+            movie_count_by_genre[year] = 1
 
-        bar_width = 0.5
-        bar_spacing = 0.5
-        bar_positions = range(len(movie_counts_by_year))
 
-        plt.bar(bar_positions, movie_counts_by_year.values(), width= bar_width, align = 'center')
+    bar_width = 0.5
 
-        plt.title('Movies per year')
-        plt.xlabel('Year')
-        plt.ylabel('Number of movies')
-        plt.xticks(bar_positions, movie_counts_by_year.keys(), rotation = 90)
+    year_bar_positions = range(len(movie_count_by_genre))
 
-        plt.subplots_adjust(bottom=0.3)
 
-        buffer = io.BytesIO()
+    plt.bar(year_bar_positions, movie_count_by_genre.values(), width=bar_width)
 
-        plt.savefig(buffer, format='png')
-        buffer.seek(0)
-        plt.close()
+    plt.title('Movies by year')
+    plt.xlabel('Year')
+    plt.ylabel('Movies')
+    plt.xticks(year_bar_positions, movie_count_by_genre.keys(), rotation = 90)
 
-        image_png = buffer.getvalue()
-        buffer.close()
-        graphic = base64.b64encode(image_png)
-        graphic = graphic.decode('utf-8')
+    plt.subplots_adjust(bottom=0.3)
 
-    return render(request, 'statistics.html', {'graphic': graphic})
+    yearPlot = io.BytesIO()
+
+    plt.savefig(yearPlot, format='png')
+    yearPlot.seek(0)
+    plt.close()
+
+    yearPlot_png = yearPlot.getvalue()
+    yearPlot.close()
+
+    yeargraphic = base64.b64encode(yearPlot_png)
+    yeargraphic = yeargraphic.decode('utf-8')
+
+
+    return render(request, 'yearstatistics.html', {'yeargraphic': yeargraphic})
+
+def genrestatistics_view(request):
+    matplotlib.use('Agg')
+
+    all_movies = Movie.objects.all()
+
+    movie_count_by_genre = {}
+
+    for movie in all_movies:
+        genre = movie.genre[0] if movie.genre[0] else "None"
+
+        if genre in movie_count_by_genre:
+            movie_count_by_genre[genre] += 1
+        else:
+            movie_count_by_genre[genre] = 1
+
+
+    bar_width = 0.5
+
+    genre_bar_positions = range(len(movie_count_by_genre))
+
+
+    plt.bar(genre_bar_positions, movie_count_by_genre.values(), width=bar_width)
+
+    plt.title('Movies by genre')
+    plt.xlabel('Genre')
+    plt.ylabel('Movies')
+    plt.xticks(genre_bar_positions, movie_count_by_genre.keys(), rotation = 90)
+
+    plt.subplots_adjust(bottom=0.3)
+
+    genrePlot = io.BytesIO()
+
+    plt.savefig(genrePlot, format='png')
+    genrePlot.seek(0)
+    plt.close()
+
+    genrePlot_png = genrePlot.getvalue()
+    genrePlot.close()
+
+    genregraphic = base64.b64encode(genrePlot_png)
+    genregraphic = genregraphic.decode('utf-8')
+
+
+    return render(request, 'genrestatistics.html', {'genregraphic': genregraphic})
